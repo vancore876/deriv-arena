@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StratForge Arena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="app-ambient" aria-hidden="true">
+  <div class="aurora-river aurora-river-a"></div>
+  <div class="aurora-river aurora-river-b"></div>
+  <div class="aurora-river aurora-river-c"></div>
+  <div class="aurora aurora-a"></div>
+  <div class="aurora aurora-b"></div>
+  <div class="aurora aurora-c"></div>
+  <div class="aurora aurora-d"></div>
+  <div class="aurora aurora-e"></div>
+  <div class="aurora aurora-f"></div>
+  <div class="aurora aurora-g"></div>
+  <div class="sky-wave sky-wave-a"></div>
+  <div class="sky-wave sky-wave-b"></div>
+  <div class="grid-glow"></div>
+  <div class="starfield"></div>
+  <div class="floating-particles">
+    <span class="float-dot dot-1"></span>
+    <span class="float-dot dot-2"></span>
+    <span class="float-dot dot-3"></span>
+    <span class="float-dot dot-4"></span>
+    <span class="float-dot dot-5"></span>
+    <span class="float-dot dot-6"></span>
+    <span class="float-dot dot-7"></span>
+    <span class="float-dot dot-8"></span>
+    <span class="float-dot dot-9"></span>
+    <span class="float-dot dot-10"></span>
+    <span class="float-dot dot-11"></span>
+    <span class="float-dot dot-12"></span>
+    <span class="float-dot dot-13"></span>
+    <span class="float-dot dot-14"></span>
+    <span class="float-dot dot-15"></span>
+    <span class="float-dot dot-16"></span>
+    <span class="float-dot dot-17"></span>
+    <span class="float-dot dot-18"></span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ LOGIN ═══ -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-bg-grid"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-icon">⚡</div>
+      <div>
+        <div class="login-title">StratForge <span>Arena</span></div>
+        <div class="login-sub">Trading Bot Platform</div>
+      </div>
+    </div>
+    <div id="loginError" class="login-error hidden"></div>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password">
+    </div>
+    <button class="btn-primary full" onclick="App.login()">Sign In</button>
+    <div class="login-divider">or</div>
+    <button class="btn-ghost full" onclick="showSignup()">Create Account</button>
+  </div>
+
+  <!-- Signup form -->
+  <div id="signupCard" class="login-card hidden" style="margin-top:16px;">
+    <div style="font-family:var(--display);font-size:18px;font-weight:600;margin-bottom:16px;">Create Account</div>
+    <div id="signupError" class="login-error hidden"></div>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="signupUser" placeholder="Choose a username">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="signupPass" placeholder="At least 6 characters">
+    </div>
+    <button class="btn-primary full" onclick="App.signup()">Create Account</button>
+    <div style="text-align:center;margin-top:12px;"><a href="#" onclick="hideSignup()" style="color:var(--text2);font-size:13px;">Back to login</a></div>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════ APP ═══ -->
+<div id="appScreen" class="hidden">
+
+  <!-- TOP BAR -->
+  <nav class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      Strat<span>Forge</span>
+    </div>
+
+    <div class="topbar-center">
+      <!-- Connection pill -->
+      <div class="conn-pill" id="connPill">
+        <span class="conn-dot" id="connDot"></span>
+        <span id="connLabel">Disconnected</span>
+      </div>
+
+      <!-- Market selector -->
+      <select id="marketSelect" class="market-select" onchange="App.setMarket(this.value)">
+        <option value="R_10">Volatility 10</option>
+        <option value="R_25" selected>Volatility 25</option>
+        <option value="R_50">Volatility 50</option>
+        <option value="R_75">Volatility 75</option>
+        <option value="R_100">Volatility 100</option>
+        <option value="1HZ10V">Volatility 10 (1s)</option>
+        <option value="1HZ25V">Volatility 25 (1s)</option>
+        <option value="1HZ50V">Volatility 50 (1s)</option>
+        <option value="1HZ75V">Volatility 75 (1s)</option>
+        <option value="1HZ100V">Volatility 100 (1s)</option>
+      </select>
+    </div>
+
+    <div class="topbar-right">
+      <!-- XP bar -->
+      <div class="xp-bar-wrap">
+        <span class="xp-level" id="topLevel">LVL 1</span>
+        <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+        <span class="xp-text" id="xpText">0 XP</span>
+      </div>
+
+      <!-- Balance -->
+      <div class="stat-pill">
+        <span class="stat-pill-label">Balance</span>
+        <span class="stat-pill-value green" id="topBalance">$0.00</span>
+      </div>
+
+      <!-- User avatar -->
+      <div class="avatar" id="avatarBtn" onclick="toggleUserMenu()">
+        <span id="avatarInitials">A</span>
+        <div class="avatar-ring" id="avatarRing"></div>
+      </div>
+
+      <!-- User dropdown -->
+      <div id="userMenu" class="user-menu hidden">
+        <div class="user-menu-name" id="userMenuName">—</div>
+        <div class="user-menu-role" id="userMenuRole">User</div>
+        <hr style="border-color:var(--border);margin:8px 0;">
+        <a href="#" onclick="showTab('manual'); closeUserMenu()">📘 Manual</a>
+        <a href="#" onclick="showTab('admin'); closeUserMenu()" id="adminLink" class="hidden">🛡 Admin Panel</a>
+        <a href="#" onclick="App.logout()">🚪 Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN LAYOUT -->
+  <div class="layout">
+
+    <!-- ══ LEFT SIDEBAR ════════════════════════════════════════════ -->
+    <aside class="sidebar">
+
+      <!-- Deriv connection -->
+      <div class="sidebar-section">
+        <div class="section-label">Connection</div>
+        <input type="password" id="apiToken" class="api-input" placeholder="Deriv API token">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;">
+          <button class="btn-blue" onclick="App.connectDeriv()">Connect</button>
+          <button class="btn-red" onclick="App.disconnectDeriv()">Disconnect</button>
+        </div>
+      </div>
+
+      <!-- Mode cards -->
+      <div class="sidebar-section">
+        <div class="section-label">Choose Mode</div>
+        <div class="mode-cards">
+          <div class="mode-card blue active-mode" data-mode="rise_fall" onclick="App.selectMode(this)">
+            <div class="mode-card-icon blue">📈</div>
+            <div class="mode-card-info">
+              <div class="mode-card-name">Rise / Fall</div>
+              <div class="mode-card-desc">Price direction contracts</div>
+            </div>
+          </div>
+          <div class="mode-card purple" data-mode="over_under" onclick="App.selectMode(this)">
+            <div class="mode-card-icon purple">🔢</div>
+            <div class="mode-card-info">
+              <div class="mode-card-name">Over / Under</div>
+              <div class="mode-card-desc">Last digit threshold bets</div>
+            </div>
+          </div>
+          <div class="mode-card green" data-mode="digits" onclick="App.selectMode(this)">
+            <div class="mode-card-icon green">🎯</div>
+            <div class="mode-card-info">
+              <div class="mode-card-name">Digits Lab</div>
+              <div class="mode-card-desc">Even/Odd rolling bias</div>
+            </div>
+          </div>
+          <div class="mode-card gold" data-mode="accumulator" onclick="App.selectMode(this)">
+            <div class="mode-card-icon gold">📊</div>
+            <div class="mode-card-info">
+              <div class="mode-card-name">Accumulator</div>
+              <div class="mode-card-desc">Trend ladder dashboard</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Style presets -->
+      <div class="sidebar-section">
+        <div class="section-label">Pick Your Style</div>
+        <div class="preset-list" id="presetList">
+          <div class="preset-item active-preset" data-preset="balanced" onclick="App.selectPreset(this)">
+            <div class="preset-dot balanced"></div>
+            <div class="preset-info">
+              <div class="preset-name">Balanced Play</div>
+              <div class="preset-sub" id="presetSubBalanced">EMA cross · Fixed stake</div>
+            </div>
+          </div>
+          <div class="preset-item" data-preset="aggressive" onclick="App.selectPreset(this)">
+            <div class="preset-dot aggressive"></div>
+            <div class="preset-info">
+              <div class="preset-name">Quick Fire</div>
+              <div class="preset-sub" id="presetSubAggressive">Bollinger · Martingale</div>
+            </div>
+          </div>
+          <div class="preset-item" data-preset="disciplined" onclick="App.selectPreset(this)">
+            <div class="preset-dot disciplined"></div>
+            <div class="preset-info">
+              <div class="preset-name">Calm Mode</div>
+              <div class="preset-sub" id="presetSubDisciplined">Tick momentum · Anti-martingale</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bot controls -->
+      <div class="sidebar-section">
+        <div class="section-label">Bot Controls</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <button class="btn-blue" onclick="App.startTicks()">Start Ticks</button>
+          <button class="btn-ghost-sm" onclick="App.stopTicks()">Stop Ticks</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;">
+          <button class="btn-green-lg" onclick="App.startBot()" id="startBotBtn">▶ Start Bot</button>
+          <button class="btn-red-lg" onclick="App.stopBot()">■ Stop Bot</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;">
+          <button class="btn-ghost-sm" onclick="App.resetSession()">↺ Session</button>
+          <button class="btn-ghost-sm" onclick="App.resetAnalyzer()">↺ Analyzer</button>
+        </div>
+        <button class="toggle-edge-btn active" id="autoEdgeBtn" onclick="App.toggleAutoEdge()" style="margin-top:8px;">
+          <span class="toggle-edge-dot"></span>
+          <span id="autoEdgeLabel">AUTO EDGE ON</span>
+        </button>
+        <div class="edge-toggle-hint" id="autoEdgeHint">The bot can rotate variants and bias presets when the current edge cools off.</div>
+      </div>
+
+      <!-- Daily challenge -->
+      <div class="challenge-card">
+        <div class="challenge-title" id="challengeTitle">Daily Challenge</div>
+        <div class="challenge-text" id="challengeText">Complete 3 Calm Mode sessions</div>
+        <div class="challenge-bar"><div class="challenge-fill" id="challengeFill" style="width:33%"></div></div>
+        <div class="challenge-footer"><span id="challengeProgress">1 / 3</span><span id="challengeReward" style="color:var(--gold)">+150 XP</span></div>
+      </div>
+
+    </aside>
+
+    <!-- ══ CENTER ════════════════════════════════════════════════ -->
+    <main class="center">
+
+      <!-- Tabs -->
+      <div class="tab-bar">
+        <button class="tab active" onclick="showTab('dashboard')">Dashboard</button>
+        <button class="tab" onclick="showTab('settings')">Settings</button>
+        <button class="tab" onclick="showTab('mt5')">MT5 Trading</button>
+        <button class="tab" onclick="showTab('manual')">Manual</button>
+        <button class="tab admin-tab hidden" onclick="showTab('admin')" id="adminTab">Admin</button>
+      </div>
+
+      <!-- ── Dashboard ─── -->
+      <div id="tabDashboard" class="tab-content">
+
+        <!-- Status banner -->
+        <div class="status-banner neon-shell">
+          <div class="status-left">
+            <div class="status-dot" id="statusDot"></div>
+            <div>
+              <div class="status-label" id="statusLabel">READY</div>
+              <div class="status-sub">
+                <span id="statusMarket">R_25</span> · Tick <span id="statusTick">#0</span>
+              </div>
+            </div>
+          </div>
+          <div class="status-stats">
+            <div class="ss-item"><div class="ss-val green" id="ssWinRate">0%</div><div class="ss-lbl">Win Rate</div></div>
+            <div class="ss-divider"></div>
+            <div class="ss-item"><div class="ss-val" id="ssTrades">0</div><div class="ss-lbl">Trades</div></div>
+            <div class="ss-divider"></div>
+            <div class="ss-item"><div class="ss-val gold" id="ssStreak">0</div><div class="ss-lbl">Streak</div></div>
+            <div class="ss-divider"></div>
+            <div class="ss-item"><div class="ss-val" id="ssPnl">$0.00</div><div class="ss-lbl">P&L</div></div>
+            <div class="ss-divider"></div>
+            <div class="ss-item"><div class="ss-val" id="ssSignal">–</div><div class="ss-lbl">Signal</div></div>
+          </div>
+        </div>
+
+        <!-- Chart + Analyzer row -->
+        <div class="two-col">
+
+          <!-- Chart card -->
+          <div class="card chart-card holo-card">
+            <div class="card-header">
+              <div class="card-title">
+                Live Chart
+                <span class="live-tag" id="liveTag">LIVE</span>
+              </div>
+              <div class="chart-chips">
+                <button class="chip active" data-tf="1" onclick="setTf(this)">1T</button>
+                <button class="chip" data-tf="5" onclick="setTf(this)">5T</button>
+                <button class="chip" data-tf="15" onclick="setTf(this)">15T</button>
+              </div>
+            </div>
+            <div class="candle-chart" id="candleChart"></div>
+            <div class="price-badge" id="priceBadge">–</div>
+          </div>
+
+          <!-- Digit Analyzer card -->
+          <div class="card analyzer-card holo-card">
+            <div class="card-header">
+              <div class="card-title">Digit Analyzer</div>
+              <div class="analyzer-badges">
+                <span class="badge-mode" id="badgeMode">Observer</span>
+                <span class="badge-signal" id="badgeSignal">NO TRADE</span>
+              </div>
+            </div>
+
+            <div class="analyzer-stats">
+              <div class="a-stat"><div class="a-label">Sample</div><div class="a-value mono" id="aSample">0 / 200</div></div>
+              <div class="a-stat"><div class="a-label">Ready</div><div class="a-value" id="aReady" style="color:var(--text2)">No</div></div>
+              <div class="a-stat"><div class="a-label">Last Digit</div><div class="a-value mono" id="aLastDigit">–</div></div>
+              <div class="a-stat"><div class="a-label">Streak</div><div class="a-value" id="aStreak">–</div></div>
+            </div>
+
+            <!-- Readiness bar -->
+            <div style="margin:10px 0 6px;">
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Readiness</div>
+              <div class="readiness-bar"><div class="readiness-fill" id="readinessFill" style="width:0%"></div></div>
+            </div>
+
+            <!-- Last 20 digits -->
+            <div class="digits-label">Last 20 Digits</div>
+            <div class="digits-grid" id="digitsGrid"></div>
+
+            <!-- Bias meters -->
+            <div class="bias-meters">
+              <div class="bias-meter">
+                <div class="bias-meter-label">50 Tick Even / Odd</div>
+                <div class="bias-values">
+                  <span class="bv-even" id="b50even">–</span>
+                  <span class="bv-odd" id="b50odd">–</span>
+                </div>
+                <div class="bias-bar-wrap"><div class="bias-fill" id="bias50fill" style="width:50%"></div></div>
+              </div>
+              <div class="bias-meter">
+                <div class="bias-meter-label">100 Tick Even / Odd</div>
+                <div class="bias-values">
+                  <span class="bv-even" id="b100even">–</span>
+                  <span class="bv-odd" id="b100odd">–</span>
+                </div>
+                <div class="bias-bar-wrap"><div class="bias-fill" id="bias100fill" style="width:50%"></div></div>
+              </div>
+              <div class="bias-meter">
+                <div class="bias-meter-label">50 Tick High / Low</div>
+                <div class="bias-values">
+                  <span class="bv-even" id="b50high">–</span>
+                  <span class="bv-odd" id="b50low">–</span>
+                </div>
+                <div class="bias-bar-wrap"><div class="bias-fill" id="biasHLfill" style="width:50%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats grid -->
+        <div class="stats-grid stat-grid-animated">
+          <div class="stat-card"><div class="sc-label">Connected</div><div class="sc-value" id="scConnected">No</div></div>
+          <div class="stat-card"><div class="sc-label">Status</div><div class="sc-value" id="scRunning">READY</div></div>
+          <div class="stat-card"><div class="sc-label">Market</div><div class="sc-value mono" id="scMarket">R_25</div></div>
+          <div class="stat-card"><div class="sc-label">Signal</div><div class="sc-value" id="scSignal">–</div></div>
+          <div class="stat-card"><div class="sc-label">Balance</div><div class="sc-value mono green" id="scBalance">$0.00</div></div>
+          <div class="stat-card"><div class="sc-label">Session P&L</div><div class="sc-value mono" id="scPnl">$0.00</div></div>
+          <div class="stat-card"><div class="sc-label">Peak P&L</div><div class="sc-value mono green" id="scPeak">$0.00</div></div>
+          <div class="stat-card"><div class="sc-label">Current Stake</div><div class="sc-value mono" id="scStake">$1.00</div></div>
+          <div class="stat-card"><div class="sc-label">Wins</div><div class="sc-value green" id="scWins">0</div></div>
+          <div class="stat-card"><div class="sc-label">Losses</div><div class="sc-value red" id="scLosses">0</div></div>
+          <div class="stat-card"><div class="sc-label">Loss Streak</div><div class="sc-value" id="scLossStreak">0</div></div>
+          <div class="stat-card"><div class="sc-label">Trades</div><div class="sc-value" id="scTrades">0</div></div>
+        </div>
+
+        <!-- Recent Trades & Log -->
+        <div class="two-col">
+          <div class="card holo-card">
+            <div class="card-title" style="margin-bottom:12px;">Recent Trades</div>
+            <div class="trades-table-wrap">
+              <table class="trades-table">
+                <thead><tr><th>Time</th><th>Mode</th><th>Dir</th><th>Result</th><th>Stake</th><th>Payout</th><th>Profit</th></tr></thead>
+                <tbody id="tradesBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card holo-card">
+            <div class="card-title" style="margin-bottom:12px;">Log</div>
+            <div class="log-box" id="logBox"></div>
+          </div>
+        </div>
+
+      </div><!-- /tabDashboard -->
+
+      <!-- ── Settings ─── -->
+      <div id="tabSettings" class="tab-content hidden">
+        <div class="settings-grid">
+
+          <!-- Trade Settings -->
+          <div class="card">
+            <div class="card-title">Trade Settings</div>
+            <div class="settings-form">
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Base Stake (USD)</label>
+                  <input type="number" id="cfgStake" value="1" min="0.35" step="0.1">
+                </div>
+                <div class="sf-group">
+                  <label>Max Stake (USD)</label>
+                  <input type="number" id="cfgMaxStake" value="100" step="1">
+                </div>
+              </div>
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Duration</label>
+                  <input type="number" id="cfgDuration" value="1" min="1">
+                </div>
+                <div class="sf-group">
+                  <label>Duration Unit</label>
+                  <select id="cfgDurationUnit">
+                    <option value="t">Ticks</option>
+                    <option value="s">Seconds</option>
+                    <option value="m">Minutes</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Risk Settings -->
+          <div class="card">
+            <div class="card-title">Risk Settings</div>
+            <div class="settings-form">
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Stop Loss (%)</label>
+                  <input type="number" id="cfgStopLoss" value="15" min="1" max="50" placeholder="Optional">
+                </div>
+                <div class="sf-group">
+                  <label>Take Profit (%)</label>
+                  <input type="number" id="cfgTakeProfit" value="20" min="1" max="100" placeholder="Optional">
+                </div>
+              </div>
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Max Loss Streak</label>
+                  <input type="number" id="cfgMaxLossStreak" value="5" min="1" max="20">
+                </div>
+                <div class="sf-group">
+                  <label>Max Trades / Session</label>
+                  <input type="number" id="cfgMaxTrades" value="50" min="1" placeholder="Leave empty = nonstop">
+                </div>
+              </div>
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Win Multiplier</label>
+                  <input type="number" id="cfgWinMult" value="1.0" step="0.05">
+                </div>
+                <div class="sf-group">
+                  <label>Loss Multiplier</label>
+                  <input type="number" id="cfgLossMult" value="1.0" step="0.05">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Digit Analyzer Settings -->
+          <div class="card">
+            <div class="card-title">Digit Analyzer Settings</div>
+            <div class="settings-form">
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Bias 50 Threshold (%)</label>
+                  <input type="number" id="cfgBias50" value="58" min="50" max="80">
+                </div>
+                <div class="sf-group">
+                  <label>Bias 100 Threshold (%)</label>
+                  <input type="number" id="cfgBias100" value="55" min="50" max="80">
+                </div>
+              </div>
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Min Sample Size</label>
+                  <input type="number" id="cfgSample" value="100" min="50" max="500">
+                </div>
+                <div class="sf-group">
+                  <label>Cooldown (ms)</label>
+                  <input type="number" id="cfgCooldown" value="1200" min="200" placeholder="Leave empty = no cooldown">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="two-col" style="margin-top:16px;">
+          <div class="card">
+            <h3>Overseer Indicator Controls</h3>
+            <div class="settings-grid">
+              <label>Rise/Fall Fast EMA<input id="cfgFastPeriod" type="number" value="10"></label>
+              <label>Rise/Fall Slow EMA<input id="cfgSlowPeriod" type="number" value="20"></label>
+              <label>Rise/Fall Confirm Ticks<input id="cfgTicksConfirm" type="number" value="2"></label>
+              <label>Over Barrier<input id="cfgOverBarrier" type="number" value="4"></label>
+              <label>Under Barrier<input id="cfgUnderBarrier" type="number" value="5"></label>
+              <label>Digit Bias %<input id="cfgDigitBias" type="number" value="60"></label>
+              <label>Digit Window<input id="cfgDigitWindow" type="number" value="50"></label>
+              <label>Digits 50T Threshold<input id="cfgDigits50" type="number" value="58"></label>
+              <label>Digits 100T Threshold<input id="cfgDigits100" type="number" value="55"></label>
+              <label>Digits 200T Threshold<input id="cfgDigits200" type="number" value="52"></label>
+              <label>Accumulator Ticks<input id="cfgAccTicks" type="number" value="100" placeholder="Leave empty = auto"></label>
+              <label>Accumulator Bias %<input id="cfgAccBias" type="number" value="56" placeholder="Leave empty = auto"></label>
+              <label>Accumulator Step %<input id="cfgAccStep" type="number" value="0.35" placeholder="Leave empty = auto"></label>
+              <label>Accumulator Target %<input id="cfgAccTarget" type="number" value="2.0" placeholder="Leave empty = auto"></label>
+              <label>Accumulator Pullback %<input id="cfgAccPullback" type="number" value="0.15" placeholder="Optional"></label>
+              <label>Accumulator EMA Fast<input id="cfgAccEmaFast" type="number" value="9" placeholder="Optional"></label>
+              <label>Accumulator EMA Slow<input id="cfgAccEmaSlow" type="number" value="21" placeholder="Optional"></label>
+            </div>
+          </div>
+          <div class="muted" style="margin-top:10px;font-size:12px;opacity:.8;">Leave optional risk fields empty to let Overseer keep trading continuously without hard session caps.</div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:10px;">
+          <button class="btn-primary" onclick="App.saveSettings()">Save Settings</button>
+          <button class="btn-ghost-sm" onclick="App.loadPresetToSettings()">Load Preset Defaults</button>
+        </div>
+      </div>
+
+      <!-- ── Manual ─── -->
+      <div id="tabManual" class="tab-content hidden">
+        <div class="manual-content">
+          <h2>📘 StratForge Arena — Manual</h2>
+          <h3>Getting Started</h3>
+          <p>1. Get a Deriv API token from <strong>app.deriv.com → Account Settings → API Token</strong>. Use <em>Read</em> + <em>Trade</em> scopes.</p>
+          <p>2. Paste your token in the Connection box and click <strong>Connect</strong>.</p>
+          <p>3. Select your Market, Mode, and Style Preset.</p>
+          <p>4. Click <strong>Start Ticks</strong> to begin data collection, then <strong>Start Bot</strong> when the Analyzer is ready.</p>
+
+          <h3>Trade Modes</h3>
+          <p><strong>📈 Rise / Fall</strong> — Predict whether the next price will be higher (Rise) or lower (Fall). Three strategies:</p>
+          <ul>
+            <li><em>Balanced Play</em> — EMA 10/20 crossover. Waits for trend confirmation before entering.</li>
+            <li><em>Quick Fire</em> — Bollinger Band breakout. Fast entries with Martingale 2x recovery.</li>
+            <li><em>Calm Mode</em> — Requires 3 consecutive ticks in same direction. Anti-martingale, strict loss limit.</li>
+          </ul>
+          <p><strong>🔢 Over / Under</strong> — Bet on whether the last digit of the price is above or below a number (usually 4 or 5).</p>
+          <ul>
+            <li><em>Balanced Play</em> — Over 4 · Enters when 50-tick histogram shows ≥60% high digits (5–9).</li>
+            <li><em>Quick Fire</em> — Over 4 · Strong bias ≥65%, Martingale 1.8x.</li>
+            <li><em>Calm Mode</em> — Under 5 · Low digit dominance ≥58%, PLS recovery (1.3x only).</li>
+          </ul>
+          <p><strong>🎯 Digits Lab</strong> — Even/Odd bias detection across 50, 100, and 200-tick rolling windows.</p>
+          <ul>
+            <li><em>Balanced Play</em> — Both 50-tick and 100-tick windows must confirm bias before trading.</li>
+            <li><em>Quick Fire</em> — 50-tick only. Fast entries, Martingale 2x after each loss.</li>
+            <li><em>Calm Mode</em> — 100+200 tick confirmation. Strictest thresholds, lowest stake, most cooldown.</li>
+          </ul>
+
+          <h3>Style Presets</h3>
+          <p>Presets configure stake size, staking mode, risk controls, and signal filters all at once.</p>
+          <ul>
+            <li><strong>Balanced Play</strong> — Fixed stake. Medium speed. Reasonable risk. Good starting point.</li>
+            <li><strong>Quick Fire</strong> — Martingale or fast PLS recovery. Highest potential reward AND risk. Requires larger account.</li>
+            <li><strong>Calm Mode</strong> — Anti-martingale or gentle PLS. Smallest stakes. Strict loss streak cutoff. Best for protecting capital.</li>
+          </ul>
+
+          <h3>XP &amp; Levels</h3>
+          <p>You earn XP for every completed trade (25 XP for wins, 5 XP for losses). Reach higher levels to unlock profile titles:</p>
+          <ul>
+            <li>Level 1: Rookie (0 XP)</li>
+            <li>Level 2: Analyst (500 XP)</li>
+            <li>Level 3: Sniper (1,500 XP)</li>
+            <li>Level 4: Strategist (3,000 XP)</li>
+            <li>Level 5: Mastermind (6,000 XP)</li>
+            <li>Level 6: Phantom (12,000 XP)</li>
+            <li>Level 7: Legend (25,000 XP)</li>
+          </ul>
+
+          <h3>Accumulator Dashboard</h3>
+          <p><strong>📊 Accumulator</strong> adds a dashboard lane for Overseer supervision. It lets Overseer tune trend-bias, ladder step %, target %, and watch-mode pacing while you decide when to escalate to live routing.</p>
+
+          <h3>Risk Warning</h3>
+          <p style="color:var(--red)">⚠ All trading carries risk. Never trade with money you cannot afford to lose. Always test on a demo account first. No strategy guarantees profits.</p>
+        </div>
+      </div>
+
+
+      <!-- ── MT5 Trading ─── -->
+      <div id="tabMt5" class="tab-content hidden">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title" style="margin-bottom:12px;">MT5 Trading Hub</div>
+            <div class="mt5-grid">
+              <div class="mt5-stat"><span>Venue</span><strong id="mt5TabVenueStatus">STANDBY</strong></div>
+              <div class="mt5-stat"><span>Bridge</span><strong id="mt5TabBridgeStatus">hooks_ready</strong></div>
+              <div class="mt5-stat"><span>Live</span><strong id="mt5TabLiveStatus">OFF</strong></div>
+              <div class="mt5-stat"><span>Symbol</span><strong id="mt5TabSymbol">XAUUSD</strong></div>
+              <div class="mt5-stat"><span>Style</span><strong id="mt5TabStyle">SMC</strong></div>
+              <div class="mt5-stat"><span>Focus</span><strong id="mt5TabFocus">MT5 Gold</strong></div>
+            </div>
+            <div class="settings-form" style="margin-top:14px;">
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Trade Venue</label>
+                  <select id="userMt5VenueInput">
+                    <option value="MT5">MT5</option>
+                    <option value="Deriv">Deriv</option>
+                  </select>
+                </div>
+                <div class="sf-group">
+                  <label>Active Symbol</label>
+                  <select id="userMt5SymbolInput">
+                    <option value="XAUUSD">Gold · XAUUSD</option>
+                    <option value="Volatility 75 Index">Volatility 75 Index</option>
+                    <option value="Volatility 100 Index">Volatility 100 Index</option>
+                  </select>
+                </div>
+              </div>
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>SMC Style</label>
+                  <select id="userMt5StyleInput">
+                    <option value="SMC">SMC Core</option>
+                    <option value="SMC Breakout">SMC Breakout</option>
+                    <option value="SMC Retracement">SMC Retracement</option>
+                  </select>
+                </div>
+                <div class="sf-group">
+                  <label>Bridge URL</label>
+                  <input id="userMt5BridgeInput" placeholder="http://104.238.214.215:9000">
+                </div>
+              </div>
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Account Login</label>
+                  <input id="userMt5LoginInput" placeholder="MT5 login">
+                </div>
+                <div class="sf-group">
+                  <label>Server</label>
+                  <input id="userMt5ServerInput" placeholder="Broker server">
+                </div>
+              </div>
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Password</label>
+                  <input id="userMt5PasswordInput" type="password" placeholder="MT5 password">
+                </div>
+                <div class="sf-group">
+                  <label>Allowed Symbols (comma separated)</label>
+                  <input id="userMt5AllowedSymbolsInput" placeholder="XAUUSD, Volatility 75 Index">
+                </div>
+              </div>
+              <div class="mt5-account-card" style="margin:10px 0 4px;">
+                <div><span>Saved Profile</span><strong id="mt5ProfileSavedStatus">Not loaded</strong></div>
+                <div><span>Password</span><strong id="mt5PasswordSavedStatus">Not set</strong></div>
+                <div><span>My MT5</span><strong id="mt5UserConnectionStatus">Disconnected</strong></div>
+              </div>
+              <div class="mission-admin-actions">
+                <button class="btn-blue" id="userMt5SaveBtn">Save My MT5</button>
+                <button class="btn-ghost-sm" id="userMt5ConnectBtn">Connect My MT5</button>
+                <button class="btn-ghost-sm" id="userMt5ArmBtn">Arm Venue</button>
+                <button class="btn-ghost-sm" id="userMt5LiveBtn">Arm Live MT5</button>
+                <button class="btn-ghost-sm" id="userMt5GoldBtn">Focus Gold</button>
+                <button class="btn-ghost-sm" id="userMt5VixBtn">Focus VIX</button>
+              </div>
+            </div>
+            <div class="card-title" style="margin:18px 0 12px;">MT5 Symbol Browser</div>
+            <div class="mt5-browser-shell">
+              <div class="mt5-browser-toolbar">
+                <input id="mt5SymbolSearch" class="mt5-symbol-search" placeholder="Search Gold, Volatility, Crash, Boom, Basket...">
+                <div id="mt5CategoryTabs" class="mt5-category-tabs"></div>
+              </div>
+              <div class="mt5-browser-grid">
+                <div class="mt5-browser-panel">
+                  <div class="mini-label">Favourites</div>
+                  <div id="mt5Favorites" class="mt5-favorites"></div>
+                </div>
+                <div class="mt5-browser-panel wide">
+                  <div class="mini-label">Available symbols</div>
+                  <div id="mt5SymbolResults" class="mt5-symbol-results"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="overseer-card" style="margin-top:14px;">
+              <div class="card-title" style="margin-bottom:10px;">Overseer on This Account</div>
+              <div class="overseer-summary">
+                <div><span class="mini-label">Status</span><strong id="mt5OverseerStatus">Watching MT5 lane</strong></div>
+                <div><span class="mini-label">Last action</span><strong id="mt5OverseerAction">Monitoring</strong></div>
+              </div>
+              <div id="mt5MissionScene" class="mission-scene compact human-scene"></div>
+              <div id="mt5TabRecommendation" class="mt5-recommendation">Overseer is waiting for venue instructions.</div>
+              <div class="mt5-account-card" style="margin-top:12px;">
+                <div><span>Accumulator</span><strong id="accumulatorStatus">STANDBY</strong></div>
+                <div><span>Step</span><strong id="accumulatorStep">0.35%</strong></div>
+                <div><span>Target</span><strong id="accumulatorTarget">2.00%</strong></div>
+              </div>
+              <div class="mt5-recommendation" id="accumulatorNotes">Accumulator dashboard ready.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="margin-bottom:12px;">Copy Trading & Account Sync</div>
+            <div class="settings-form">
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Follow Admin Account</label>
+                  <select id="copyFollowInput">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+                <div class="sf-group">
+                  <label>Mirror Admin Trades</label>
+                  <select id="copyMirrorInput">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="sf-row">
+                <div class="sf-group">
+                  <label>Risk Multiplier</label>
+                  <input id="copyRiskInput" type="number" min="0.1" step="0.1" value="1">
+                </div>
+                <div class="sf-group">
+                  <label>Same as Admin Lot</label>
+                  <select id="copySameAsAdminInput">
+                    <option value="false">Scaled</option>
+                    <option value="true">Same size</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mission-admin-actions">
+                <button class="btn-blue" id="copyTradingBtn">Save Copy Trading</button>
+              </div>
+            </div>
+            <div class="mt5-account-card">
+              <div><span>Last Admin Sync</span><strong id="copyLastSync">—</strong></div>
+              <div><span>Mirror Mode</span><strong id="copyModeStatus">Off</strong></div>
+              <div><span>Live Execution</span><strong id="copyLiveStatus">Disabled</strong></div>
+            </div>
+            <div class="card-title" style="margin:18px 0 12px;">Bridge Path to Live MT5</div>
+            <ol class="mt5-steps">
+              <li>Run MT5 terminal on a Windows VPS or local Windows machine.</li>
+              <li>Start a local bridge service at the URL above.</li>
+              <li>Connect your MT5 login + server details.</li>
+              <li>Use demo first, then arm live MT5 once bridge connectivity is confirmed.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Admin ─── -->
+      <div id="tabAdmin" class="tab-content hidden">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px;">Admin Panel — Overseer Command Center</div>
+          <div class="admin-overseer-grid">
+            <div class="admin-overseer-left">
+              <div class="mission-admin">
+                <div class="mission-admin-row">
+                  <input id="missionTitleInput" placeholder="Mission title">
+                  <input id="missionTextInput" placeholder="Mission brief">
+                </div>
+                <div class="mission-admin-row">
+                  <select id="missionLevelInput"><option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option><option value="4">Level 4</option></select>
+                  <input id="missionGoalInput" type="number" min="1" value="3" placeholder="Goal">
+                  <input id="missionRewardInput" placeholder="Reward" value="+100 XP">
+                  <select id="missionAgentInput"><option value="overseer">Overseer</option><option value="jarvis">Open Jarvis</option><option value="openclaw">OpenClaw</option><option value="risk">Risk Guardian</option><option value="strategy">Strategy Lab</option><option value="regime">Regime Agent</option><option value="reviewer">Session Reviewer</option><option value="memory">Memory Curator</option></select>
+                </div>
+                <div class="mission-admin-actions">
+                  <button class="btn-blue" id="createMissionBtn">Create Mission</button>
+                  <button class="btn-ghost-sm" data-overseer-command="pause_bot">Pause Bot</button>
+                  <button class="btn-ghost-sm" data-overseer-command="resume_bot">Resume Bot</button>
+                  <button class="btn-ghost-sm" data-overseer-command="force_research">Force Research</button>
+                  <button class="btn-ghost-sm" data-overseer-command="deploy_new_strategy">Deploy New Strategy</button>
+                  <button class="btn-ghost-sm" data-overseer-command="tighten_risk">Tighten Risk</button>
+                  <button class="btn-ghost-sm" data-overseer-command="boost_bot">Boost Bot</button>
+                  <button class="btn-ghost-sm" data-overseer-command="set_autonomy" data-enabled="true">Autonomy On</button>
+                </div>
+              </div>
+              <div class="overseer-card admin-mission-grid">
+                <div class="overseer-summary">
+                  <div><span class="mini-label">Status</span><strong id="overseerStatus">Watching live session</strong></div>
+                  <div><span class="mini-label">Last action</span><strong id="overseerAction">Monitoring</strong></div>
+                </div>
+                <div id="missionLevelTabs" class="mission-tabs"></div>
+                <div id="missionBoard" class="mission-board"></div>
+                <div id="overseerNotices" class="overseer-notices"></div>
+              </div>
+            </div>
+            <div class="admin-overseer-right">
+              <div class="overseer-card mission-control-card">
+                <div class="card-title" style="margin-bottom:10px;">Mission Control Scene</div>
+                <div id="missionScene" class="mission-scene"></div>
+              </div>
+              <div class="overseer-card" style="margin-top:14px;">
+                <div class="card-title" style="margin-bottom:10px;">Agent Roster</div>
+                <div id="agentRoster" class="agent-roster"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-title" style="margin:18px 0 12px;">User Management</div>
+          <table class="trades-table" id="adminTable">
+            <thead><tr><th>Username</th><th>Role</th><th>Level</th><th>Created</th><th>Expires</th><th>Actions</th></tr></thead>
+            <tbody id="adminBody"></tbody>
+          </table>
+          <button class="btn-primary" style="margin-top:16px;" onclick="App.loadAdminUsers()">↺ Refresh</button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ══ RIGHT PANEL ═════════════════════════════════════════════ -->
+    <aside class="right-panel">
+
+      <!-- P&L Card -->
+      <div>
+        <div class="section-label">Session Summary</div>
+        <div class="pnl-card">
+          <div class="pnl-main">
+            <div class="pnl-big" id="rpPnl">+$0.00</div>
+            <div class="pnl-pct" id="rpPnlPct">+0.0%</div>
+          </div>
+          <div class="pnl-grid">
+            <div class="pnl-cell"><div class="pnl-cell-label">Peak P&L</div><div class="pnl-cell-val green" id="rpPeak">$0.00</div></div>
+            <div class="pnl-cell"><div class="pnl-cell-label">Drawdown</div><div class="pnl-cell-val red" id="rpDrawdown">$0.00</div></div>
+            <div class="pnl-cell"><div class="pnl-cell-label">Trades</div><div class="pnl-cell-val" id="rpTrades">0</div></div>
+            <div class="pnl-cell"><div class="pnl-cell-label">Duration</div><div class="pnl-cell-val mono" id="rpDuration">0m</div></div>
+          </div>
+          <!-- Win rate ring -->
+          <div class="win-rate-row">
+            <div class="ring-wrap">
+              <svg width="60" height="60" viewBox="0 0 60 60">
+                <circle cx="30" cy="30" r="23" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="4"/>
+                <circle cx="30" cy="30" r="23" fill="none" stroke="#00E676" stroke-width="4"
+                  stroke-dasharray="144.5" stroke-dashoffset="144.5"
+                  stroke-linecap="round" id="winRateCircle" style="transform:rotate(-90deg);transform-origin:30px 30px;"/>
+              </svg>
+              <div class="ring-val" id="rpWinRate">0%</div>
+            </div>
+            <div class="ring-stats">
+              <div class="ring-row"><span class="rs-lbl">Wins</span><span class="rs-val green" id="rpWins">0</span></div>
+              <div class="ring-row"><span class="rs-lbl">Losses</span><span class="rs-val red" id="rpLosses">0</span></div>
+              <div class="ring-row"><span class="rs-lbl">Best streak</span><span class="rs-val gold" id="rpBestStreak">0</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk Meter -->
+      <div>
+        <div class="section-label">Risk Meter</div>
+        <div class="risk-card">
+          <div class="risk-header">
+            <span style="font-size:12px;color:var(--text2);">Session exposure</span>
+            <span class="risk-label" id="riskLabel">LOW</span>
+          </div>
+          <div class="risk-bar"><div class="risk-fill" id="riskFill" style="width:0%"></div></div>
+          <div class="risk-scale"><span>Safe</span><span>Moderate</span><span>High</span></div>
+        </div>
+      </div>
+
+      <!-- Preset Info -->
+      <div>
+        <div class="section-label">Active Preset</div>
+        <div class="preset-info-card" id="presetInfoCard">
+          <div class="pi-name" id="piName">Balanced Play</div>
+          <div class="pi-desc" id="piDesc">EMA 10/20 crossover. Trades with the trend. Medium speed.</div>
+          <div class="pi-tags" id="piTags">
+            <span class="pi-tag">Fixed Stake</span>
+            <span class="pi-tag">SL 15%</span>
+            <span class="pi-tag">TP 20%</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">Edge Hunt</div>
+        <div class="challenge-card bonus-card">
+          <div class="challenge-title" id="bonusTitle">Rise / Fall Edge Hunt</div>
+          <div class="challenge-text" id="bonusText">Auto-edge is reviewing the active setup and will rotate if the current run loses its edge.</div>
+          <div class="challenge-bar"><div class="challenge-fill" id="bonusFill" style="width:0%"></div></div>
+          <div class="challenge-footer"><span id="bonusProgress">0 / 5</span><span id="bonusReward" style="color:var(--blue)">Next review in 5 trades</span></div>
+        </div>
+      </div>
+
+          <div>
+        <div class="section-label">Open Jarvis</div>
+        <div class="jarvis-card">
+          <div class="jarvis-head"><strong>Overseer Assistant</strong><span id="overseerAutonomy">Autonomy ON</span></div>
+          <div id="jarvisLog" class="jarvis-log"><div class="jarvis-line bot">Overseer assistant online. Ask about trading, MT5, notes, planning, summaries, or what happened while you were away.</div></div>
+          <div class="jarvis-row"><input id="jarvisInput" placeholder="Ask Overseer anything..."><button class="btn-blue" id="jarvisSend">Send</button></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">Home Mission Scene</div>
+        <div class="overseer-card">
+          <div class="overseer-summary">
+            <div><span class="mini-label">Status</span><strong id="homeOverseerStatus">Watching live session</strong></div>
+            <div><span class="mini-label">Last action</span><strong id="homeOverseerAction">Monitoring</strong></div>
+          </div>
+          <div id="homeMissionScene" class="mission-scene compact"></div>
+          <div id="homeOverseerNotices" class="overseer-notices compact"></div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <div id="questPopups" class="quest-popups"></div>
+
+  <div id="pixelPal" class="pixel-pal hidden" aria-hidden="true">
+    <div class="pixel-pal-shadow"></div>
+    <div class="pixel-pal-sprite"></div>
+    <div class="pixel-pal-bubble">psst ✨</div>
+  </div>
+</div><!-- /appScreen -->
+
+<!-- ═══════════════════════════════════════════ RESULT OVERLAY ══════ -->
+<div id="resultOverlay" class="overlay hidden">
+  <div class="result-card">
+    <div class="result-icon" id="resultIcon">🎯</div>
+    <div class="result-title" id="resultTitle">YOU WON!</div>
+    <div class="result-amount" id="resultAmount">+$4.60</div>
+    <div class="result-xp" id="resultXp">⚡ +25 XP earned</div>
+    <button class="btn-primary" onclick="closeResult()" style="margin-top:20px;width:100%;">Continue →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ LEVEL UP OVERLAY ═══ -->
+<div id="levelUpOverlay" class="overlay hidden">
+  <div class="result-card level-up-card">
+    <div style="font-size:52px;margin-bottom:12px;">🏆</div>
+    <div style="font-family:var(--display);font-size:14px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Level Up!</div>
+    <div style="font-family:var(--display);font-size:36px;font-weight:700;color:var(--text);margin-bottom:6px;" id="luLevel">LEVEL 2</div>
+    <div style="font-size:16px;color:var(--gold);font-family:var(--display);font-weight:600;margin-bottom:20px;" id="luTitle">Analyst</div>
+    <button class="btn-primary" onclick="closeLevelUp()" style="width:100%;">Let's Go ⚡</button>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/overseer-ui.js"></script>
+<script src="/js/dashboard-fx.js"></script>
+</body>
+</html>

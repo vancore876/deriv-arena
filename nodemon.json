@@ -1,0 +1,10 @@
+{
+  "watch": ["src", "public", ".env"],
+  "ext": "js,json,html,css",
+  "ignore": [
+    "data/**",
+    "logs/**",
+    "public/vendor/**",
+    "node_modules/**"
+  ]
+}
